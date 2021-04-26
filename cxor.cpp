@@ -3,15 +3,29 @@
 #include <boost/program_options.hpp>
 #include <string>
 #include <vector>
+#include <time.h>
 
 namespace po = boost::program_options;
 
-void parseargs(int argc, char* argv[])
+std::string randomkey()
+{
+    std::string sAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    srand(time(NULL)); // init srand with seed as current system clock time
+    std::string sKey;
+    for (int i = 0; i != 10; i++)
+    {
+        int iRandomIndex = rand() % 51 +1; // generate a number between 1 and 26
+        sKey.insert(sKey.length(), 1, sAlphabet[iRandomIndex]);
+    }
+    return sKey;
+}
+
+std::vector<std::string> parseargs(int argc, char* argv[])
 {
     std::string sIFile;
-    bool bInputHex = false;
+    std::string bInputHex = "false";
     std::string sOFile;
-    bool bOutputHex = false;
+    std::string bOutputHex = "false";
     std::string sKey;
 
     po::options_description desc("Allowed options");
@@ -44,7 +58,7 @@ void parseargs(int argc, char* argv[])
 
     if (vm.count("ih"))
     {
-        bool bInputHex = true;
+        bool bInputHex = "true";
     }
 
     if (vm.count("of"))
@@ -55,7 +69,7 @@ void parseargs(int argc, char* argv[])
 
     if (vm.count("oh"))
     {
-        bool bOutputHex = true;
+        bool bOutputHex = "true";
     }
 
     if (vm.count("k"))
@@ -64,10 +78,30 @@ void parseargs(int argc, char* argv[])
     }
     else
     {
-        std::cout << "A key must be specified";
-        exit(0);
+        std::string sKey = randomkey();
+        std::cout << "No key provided, using generated key " << sKey << std::endl;
     }
 
+    std::vector<std::string> sParsedArgs {sIFile, bInputHex, sOFile, bOutputHex, sKey}; // init vector with parsed args
+    return sParsedArgs;
+}
+
+void encryptio(std::vector<std::string> sParsedArgs)
+{
+    std::string sMessage;
+
+    if (sParsedArgs[0] == "") // if no file path was provided
+    {
+        std::cout << "No file path provided, please input message:";
+        std::cin >> sMessage;
+    }
+    else // if a file path was provided
+    {
+        // TODO WRITE HEX CASE TO CONVERT HEX BACK TO ORIGINAL FORM!!!!!!
+        std::ifstream IFile;
+        IFile.open(sParsedArgs[0]); // open file
+        IFile >> sMessage;
+    }
 }
 
 std::vector<char> xormessage(std::string sMessage, std::string sKey)
@@ -89,7 +123,8 @@ std::vector<char> xormessage(std::string sMessage, std::string sKey)
 
 int main(int argc, char* argv[])
 {
-    //parseargs(argc, argv);
+    std::vector<std::string> sParsedArgs = parseargs(argc, argv);
+    encryptio(sParsedArgs);
     xormessage("hello  ", "key");
 
 
