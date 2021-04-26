@@ -8,10 +8,11 @@ namespace po = boost::program_options;
 
 void parseargs(int argc, char* argv[])
 {
+    std::string sIFile;
     bool bInputHex = false;
+    std::string sOFile;
     bool bOutputHex = false;
-    std::string sInputFile;
-    std::string sOutputFile;
+    std::string sKey;
 
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -20,6 +21,7 @@ void parseargs(int argc, char* argv[])
         ("ih", "Input data is in hex")
         ("of", po::value<std::string>(), "Specify an output file")
         ("oh", "Output data in hex")
+        ("k",  po::value<std::string>(), "Specify a key")
     ;
 
     /*po::positional_options_description p;
@@ -36,9 +38,8 @@ void parseargs(int argc, char* argv[])
 
     if (vm.count("if"))
     {
-        std::string file = vm["if"].as<std::string>();
-        std::string filecut = file.substr(1, file.length());
-        std::cout << filecut;
+        sIFile = vm["if"].as<std::string>();
+        sIFile = sIFile.substr(1, sIFile.length());
     }
 
     if (vm.count("ih"))
@@ -48,15 +49,25 @@ void parseargs(int argc, char* argv[])
 
     if (vm.count("of"))
     {
-        std::string file = vm["of"].as<std::string>();
-        std::string filecut = file.substr(1, file.length());
-        std::cout << filecut;
+        sOFile = vm["of"].as<std::string>();
+        sOFile = sOFile.substr(1, sOFile.length());
     }
 
     if (vm.count("oh"))
     {
         bool bOutputHex = true;
     }
+
+    if (vm.count("k"))
+    {
+        sKey = vm["k"].as<std::string>();
+    }
+    else
+    {
+        std::cout << "A key must be specified";
+        exit(0);
+    }
+
 }
 
 std::vector<char> xormessage(std::string sMessage, std::string sKey)
