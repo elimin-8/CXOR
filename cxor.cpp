@@ -16,14 +16,14 @@ void parseargs(int argc, char* argv[])
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help", "Print this message")
-        ("input,i", po::value<std::string>(), "Specify an input file")
+        ("if", po::value<std::string>(), "Specify an input file")
         ("ih", "Input data is in hex")
-        ("output,o", "Specify an output file")
+        ("of", po::value<std::string>(), "Specify an output file")
         ("oh", "Output data in hex")
     ;
 
-    po::positional_options_description p;
-    p.add("input", -1);
+    /*po::positional_options_description p;
+    p.add("input", -1);*/
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -34,9 +34,9 @@ void parseargs(int argc, char* argv[])
         std::cout << desc << std::endl;
     }
 
-    if (vm.count("input"))
+    if (vm.count("if"))
     {
-        std::string file = vm["input"].as<std::string>();
+        std::string file = vm["if"].as<std::string>();
         std::string filecut = file.substr(1, file.length());
         std::cout << filecut;
     }
@@ -46,9 +46,9 @@ void parseargs(int argc, char* argv[])
         bool bInputHex = true;
     }
 
-    if (vm.count("output"))
+    if (vm.count("of"))
     {
-        std::string file = vm["output"].as<std::string>();
+        std::string file = vm["of"].as<std::string>();
         std::string filecut = file.substr(1, file.length());
         std::cout << filecut;
     }
